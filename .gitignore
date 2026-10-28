@@ -1,0 +1,9 @@
+
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.zip
+*~
+Properties/PublishProfiles/*.pubxml.user

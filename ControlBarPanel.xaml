@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="DMXScenarioDesigner.ControlBarPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="280">
+
+    <UserControl.Resources>
+        <!-- Style cho các nút bấm chính (Đã giảm chiều cao xuống 45px để tránh tràn) -->
+        <Style x:Key="MainButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F0F7FF"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#007ACC"/>
+                                <Setter Property="Foreground" Value="#007ACC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style cho các nút Icon (Thu nhỏ lại một chút) -->
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="45"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bg" Background="{TemplateBinding Background}" CornerRadius="22">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#F0F0F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="White" BorderBrush="#3F3F46" BorderThickness="1" Margin="2" CornerRadius="4">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Tiêu đề -->
+                <RowDefinition Height="Auto"/>
+                <!-- Chọn COM -->
+                <RowDefinition Height="*"/>
+                <!-- Các nút chính (Co giãn) -->
+                <RowDefinition Height="Auto"/>
+                <!-- Các nút Icon -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. Tiêu đề (Nhỏ lại một chút) -->
+            <TextBlock Grid.Row="0" Text="KẾT NỐI &amp; ĐIỀU KHIỂN" FontSize="12" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+            <!-- 2. Chọn cổng COM -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                <TextBlock Text="Cổng kết nối:" FontSize="10" Foreground="#666666" Margin="2,0,0,2"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="ComboComPorts" Grid.Column="0" Height="30" VerticalContentAlignment="Center" FontSize="12"/>
+                    <Button Grid.Column="1" Content="🔄" Width="30" Height="30" Margin="4,0,0,0" ToolTip="Làm mới" Click="BtnRefreshCom_Click" Background="White" BorderBrush="#CCCCCC"/>
+
+                    <!-- Nút Kết Nối (Mới bổ sung) -->
+                    <Button x:Name="BtnConnect" Grid.Column="2" Content="Kết nối" Width="70" Height="30" Margin="4,0,0,0" Click="BtnConnect_Click" Background="#007ACC" Foreground="White" BorderThickness="0" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+            </StackPanel>
+
+            <!-- 3. Các nút điều khiển chính -->
+            <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                <Button Content="🚀 Gửi kịch bản" Style="{StaticResource MainButtonStyle}" Height="45" Click="BtnSend_Click"/>
+            </StackPanel>
+
+            <!-- 4. Các nút File (Icon) -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+                <Button Style="{StaticResource IconButtonStyle}" ToolTip="Tạo mới" Click="BtnNew_Click">
+                    <StackPanel>
+                        <TextBlock Text="📄" FontSize="18" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Mới" FontSize="8" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IconButtonStyle}" ToolTip="Mở thiết kế" Click="BtnOpen_Click">
+                    <StackPanel>
+                        <TextBlock Text="📂" FontSize="18" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Mở" FontSize="8" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IconButtonStyle}" ToolTip="Lưu thiết kế" Click="BtnSave_Click">
+                    <StackPanel>
+                        <TextBlock Text="💾" FontSize="18" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Lưu" FontSize="8" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

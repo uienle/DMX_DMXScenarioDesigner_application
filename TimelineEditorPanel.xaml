@@ -1,0 +1,241 @@
+﻿<UserControl x:Class="DMXScenarioDesigner.TimelineEditorPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DMXScenarioDesigner"
+             mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="800"
+             x:Name="Root"
+             Focusable="True" KeyDown="UserControl_KeyDown"
+             Loaded="UserControl_Loaded"
+             PreviewMouseWheel="UserControl_PreviewMouseWheel">
+    <!-- Bắt sự kiện Lăn chuột để Zoom -->
+
+    <UserControl.Resources>
+        <!-- Converter mới dùng cho Zoom -->
+        <local:ZoomConverter x:Key="ZoomConv" />
+
+        <Style x:Key="ToolbarBtnStyle" TargetType="Button">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E5E5E5"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="EffectBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="BorderBrush" Value="#A0A0A0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="SizeAll"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#555555"/>
+                    <Setter Property="BorderThickness" Value="1.5"/>
+                </Trigger>
+                <Trigger Property="Tag" Value="Selected">
+                    <Setter Property="Background" Value="#C0D8F0"/>
+                    <Setter Property="BorderBrush" Value="#0078D7"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border BorderBrush="#CCCCCC" BorderThickness="1" Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 1. Toolbar -->
+            <Border Grid.Row="0" Background="White" BorderBrush="#D1D1D1" BorderThickness="0,0,0,1">
+                <Grid Margin="5,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="⏮" ToolTip="Quay về đầu (00:00)" Style="{StaticResource ToolbarBtnStyle}" Click="BtnReplay_Click"/>
+                        <Button x:Name="BtnPlayPause" Content="▶" ToolTip="Phát/Tạm dừng" Style="{StaticResource ToolbarBtnStyle}" Click="BtnPlayPause_Click"/>
+                        <Separator Margin="10,5" Background="#D1D1D1"/>
+                        <TextBlock x:Name="CurrentTimeText" Text="00m:00s:00" VerticalAlignment="Center" 
+                                   FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="#333" Margin="5,0,15,0"/>
+                        <Separator Margin="10,5" Background="#D1D1D1"/>
+                        <Button x:Name="BtnAddMusic" Content="🎵 Thêm nhạc" ToolTip="Thêm tập tin âm nhạc vào timeline" Style="{StaticResource ToolbarBtnStyle}" Click="BtnAddMusic_Click" Width="100"/>
+                        <Button x:Name="BtnBeatDectect" Content=" | | | Phân đoạn" ToolTip="Tìm và dánh dấu vị trí cho các phần của bài nhạc" Style="{StaticResource ToolbarBtnStyle}" Click="BtnBeatDectect_Click" Width="100"/>
+                     
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="BtnUndo" Content="↶" ToolTip="Hoàn tác (Ctrl+Z)" Style="{StaticResource ToolbarBtnStyle}" Click="BtnUndo_Click" IsEnabled="False"/>
+                        <Button x:Name="BtnRedo" Content="↷" ToolTip="Làm lại (Ctrl+Y)" Style="{StaticResource ToolbarBtnStyle}" Click="BtnRedo_Click" IsEnabled="False"/>
+                        <Separator Margin="5,5" Background="#D1D1D1"/>
+                        <Button x:Name="BtnDelete" Content="🗑" ToolTip="Xóa hiệu ứng đã chọn (Del)" Style="{StaticResource ToolbarBtnStyle}" Click="BtnDelete_Click" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 2. Ruler -->
+            <Canvas Grid.Row="1" Background="#F9F9F9" x:Name="RulerContainer" ClipToBounds="True" 
+                    MouseLeftButtonDown="TimelineGrid_MouseLeftButtonDown"
+                    MouseMove="TimelineGrid_MouseMove"
+                    MouseLeftButtonUp="TimelineGrid_MouseLeftButtonUp">
+                <Canvas x:Name="RulerCanvas" Height="25"/>
+            </Canvas>
+
+            <!-- 3. Editor chính -->
+            <ScrollViewer Grid.Row="2" x:Name="EditorScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                          ScrollChanged="EditorScroll_ScrollChanged" SizeChanged="EditorScroll_SizeChanged">
+
+                <Grid x:Name="TimelineGrid" 
+                      MouseLeftButtonDown="TimelineGrid_MouseLeftButtonDown"
+                      MouseMove="TimelineGrid_MouseMove"
+                      MouseLeftButtonUp="TimelineGrid_MouseLeftButtonUp">
+
+                    <!-- Waveform background -->
+                    <Canvas x:Name="WaveformCanvas" 
+                            IsHitTestVisible="False"
+                            Panel.ZIndex="0"/>
+                    <!-- Beat markers -->
+                    <Canvas x:Name="BeatCanvas"
+                            IsHitTestVisible="False"
+                            Panel.ZIndex="1"/>
+                    
+                    <!-- Audio block layer -->
+                    <ItemsControl x:Name="AudioItemsControl" Panel.ZIndex="10">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Height="16"
+                                    Background="#AA4488FF"
+                                    CornerRadius="4"
+                                    MouseLeftButtonDown="Audio_MouseDown"
+                                    >
+                                    <TextBlock Text="{Binding DisplayName}"
+                           Margin="8,0"
+                           VerticalAlignment="Center"
+                           Foreground="White"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Top" Value="-2"/>
+
+                                <Setter Property="Canvas.Left">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource ZoomConv}">
+                                            <Binding Path="StartTime"/>
+                                            <Binding RelativeSource="{RelativeSource AncestorType=UserControl}"
+                                 Path="MsToPx"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+
+                                <Setter Property="Width">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource ZoomConv}">
+                                            <Binding Path="Duration"/>
+                                            <Binding RelativeSource="{RelativeSource AncestorType=UserControl}"
+                                 Path="MsToPx"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Height" Value="16"/>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+                    <!-- editor track -->
+                    <ItemsControl x:Name="EditorTracksItemsControl"  Panel.ZIndex="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Height="40" BorderBrush="#EEEEEE" BorderThickness="0,0,0,1">
+                                    <Canvas Background="Transparent">
+                                        <ItemsControl ItemsSource="{Binding Effects}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Canvas/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+
+                                            <ItemsControl.ItemContainerStyle>
+                                                <Style TargetType="ContentPresenter">
+                                                    <Setter Property="Canvas.Top" Value="5"/>
+                                                    <!-- Dùng MultiBinding để tính Canvas.Left = StartTime * MsToPx -->
+                                                    <Setter Property="Canvas.Left">
+                                                        <Setter.Value>
+                                                            <MultiBinding Converter="{StaticResource ZoomConv}">
+                                                                <Binding Path="StartTime"/>
+                                                                <Binding Path="MsToPx" ElementName="Root"/>
+                                                            </MultiBinding>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ItemsControl.ItemContainerStyle>
+
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Style="{StaticResource EffectBorderStyle}" Height="30" 
+                                                            MouseLeftButtonDown="Effect_MouseDown" MouseMove="Effect_MouseMove" MouseLeftButtonUp="Effect_MouseUp">
+                                                        <!-- Dùng MultiBinding để tính Width = Duration * MsToPx -->
+                                                        <Border.Width>
+                                                            <MultiBinding Converter="{StaticResource ZoomConv}">
+                                                                <Binding Path="Duration"/>
+                                                                <Binding Path="MsToPx" ElementName="Root"/>
+                                                            </MultiBinding>
+                                                        </Border.Width>
+
+                                                        <Grid>
+                                                            <TextBlock Text="{Binding EffectName}" Foreground="#333" FontSize="10" 
+                                                                       VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False"/>
+                                                            <Thumb Width="6" HorizontalAlignment="Left" Cursor="SizeWE" DragDelta="ThumbLeft_DragDelta" DragCompleted="Thumb_DragCompleted" Background="Transparent"/>
+                                                            <Thumb Width="6" HorizontalAlignment="Right" Cursor="SizeWE" DragDelta="ThumbRight_DragDelta" DragCompleted="Thumb_DragCompleted" Background="Transparent"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Canvas>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Canvas IsHitTestVisible="False">
+                        <Border x:Name="SnapPreview" Background="#40333333" BorderBrush="#333333" BorderThickness="1" 
+                                Height="30" Visibility="Collapsed" CornerRadius="2"/>
+                    </Canvas>
+
+                    <Canvas IsHitTestVisible="False">
+                        <Rectangle x:Name="Playhead" Width="2" Fill="black" Height="4000" Canvas.Left="0"/>
+                    </Canvas>
+                    
+                </Grid>
+            </ScrollViewer>
+            
+        </Grid>
+    </Border>
+</UserControl>
