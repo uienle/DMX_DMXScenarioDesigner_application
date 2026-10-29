@@ -12,7 +12,7 @@ The application communicates with the DMX Controller through USB serial communic
 
 ### Features
 
-- Design control scenarios using a timeline-based interface.
+- Design control scenarios.
 - Arrange and edit timeline items for supported lighting and motor-control effects.
 - Integrate audio-related functionality into the scenario design workflow.
 - Transfer scenarios to the DMX Controller through a USB serial connection.
@@ -71,7 +71,7 @@ DMX Scenario Designer là ứng dụng desktop chạy trên Windows, được ph
 
 ### Chức năng chính
 
-- Thiết kế kịch bản điều khiển bằng giao diện timeline.
+- Thiết kế kịch bản điều khiển.
 - Sắp xếp và chỉnh sửa các thành phần trên timeline cho những hiệu ứng đèn và motor được hỗ trợ.
 - Tích hợp các chức năng liên quan đến âm thanh vào quy trình thiết kế kịch bản.
 - Truyền kịch bản đến DMX Controller qua kết nối USB Serial.
