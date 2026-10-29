@@ -43,8 +43,8 @@ To test hardware communication, connect the DMX Controller and configure the app
 
 ### Related Repositories
 
-- **DMX Controller (TX Firmware):** [STM32_TxDMX](https://github.com/uienle/STM32_TxDMX)
-- **DMX Device Node (RX Firmware):** [STM32_RxDMX-LED_MOTOR](https://github.com/uienle/STM32_RxDMX-LED_MOTOR)
+- **DMX Controller (TX Firmware):** [STM32_TxDMX](https://github.com/uienle/DMX_STM32-Controller)
+- **DMX Device Node (RX Firmware):** [STM32_RxDMX-LED_MOTOR](https://github.com/uienle/DMX_STM32_Device-LED-MOTOR)
 
 ### Development Notes
 
@@ -102,8 +102,8 @@ DMX Scenario Designer là ứng dụng desktop chạy trên Windows, được ph
 
 ### Các repository liên quan
 
-- **DMX Controller (TX Firmware):** [STM32_TxDMX](https://github.com/uienle/STM32_TxDMX)
-- **DMX Device Node (RX Firmware):** [STM32_RxDMX-LED_MOTOR](https://github.com/uienle/STM32_RxDMX-LED_MOTOR)
+- **DMX Controller (TX Firmware):** [STM32_TxDMX](https://github.com/uienle/DMX_STM32-Controller)
+- **DMX Device Node (RX Firmware):** [STM32_RxDMX-LED_MOTOR](https://github.com/uienle/DMX_STM32_Device-LED-MOTOR)
 
 ### Ghi chú phát triển
 
