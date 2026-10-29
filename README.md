@@ -98,7 +98,7 @@ DMX Scenario Designer là ứng dụng desktop chạy trên Windows, được ph
 4. Build solution.
 5. Chạy ứng dụng trực tiếp từ Visual Studio.
 
-Để thử nghiệm giao tiếp phần cứng, hãy kết nối DMX Controller và cấu hình đúng cổng Serial.
+Để thử nghiệm giao tiếp phần cứng, hãy kết nối DMX Controller và cấu hình đúng Serial port.
 
 ### Các repository liên quan
 
