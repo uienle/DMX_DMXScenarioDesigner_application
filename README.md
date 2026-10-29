@@ -6,7 +6,9 @@
 
 ### Overview
 
-DMX Scenario Designer is a Windows desktop application developed using C# and WPF. It provides a timeline-based interface for designing DMX lighting and motor-control scenarios.
+DMX Scenario Designer is a Windows desktop application developed for a DMX512-based musical fountain control system. It allows users to design and configure timeline-based control scenarios for fountain devices, then transfer the scenarios to the DMX Controller via USB virtual COM port.
+
+The application handles scenario design and configuration, while the DMX Controller independently executes the uploaded scenarios.
 
 The application communicates with the DMX Controller through USB serial communication to transfer scenarios for independent execution.
 
@@ -65,7 +67,9 @@ The source code is provided for learning and review. Further improvements to the
 
 ### Tổng quan
 
-DMX Scenario Designer là ứng dụng desktop chạy trên Windows, được phát triển bằng C# và WPF. Ứng dụng cung cấp giao diện timeline để thiết kế kịch bản điều khiển đèn DMX và motor.
+DMX Scenario Designer là ứng dụng desktop chạy trên Windows, được phát triển cho hệ thống điều khiển nhạc nước sử dụng giao thức DMX512. Ứng dụng cho phép người dùng thiết kế và cấu hình các kịch bản điều khiển theo dòng thời gian cho thiết bị nhạc nước, sau đó truyền kịch bản đến DMX Controller thông qua cổng COM ảo USB.
+
+Ứng dụng đảm nhiệm việc thiết kế và cấu hình kịch bản, trong khi DMX Controller tự thực thi các kịch bản đã được tải lên.
 
 Ứng dụng giao tiếp với DMX Controller qua USB Serial để truyền kịch bản. Sau khi nhận được kịch bản, Controller có thể tự thực thi độc lập.
 
